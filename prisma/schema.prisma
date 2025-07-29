@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions Session[]
+
+  masyarakat masyarakat?
+  petugas    petugas?
+
+  @@map("users")
+}
+
+enum UserRole {
+  USER
+  PETUGAS
+  ADMINISTRATOR
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model masyarakat {
+  nik  String @id @db.Char(16)
+  nama String @db.VarChar(35)
+  telp String @db.VarChar(13)
+
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id])
+
+  pengaduan pengaduan[]
+}
+
+model pengaduan {
+  id_pengaduan  Int      @id @db.Int
+  tgl_pengaduan DateTime @db.Date
+  nik           String   @db.Char(16)
+  isi_laporan   String   @db.Text
+  foto          String   @db.VarChar(255)
+  status        Status
+
+  masyarakat masyarakat  @relation(fields: [nik], references: [nik])
+  tanggapan  tanggapan[]
+}
+
+enum Status {
+  KOSONG  @map("0")
+  PROSES  @map("proses")
+  SELESAI @map("selesai")
+}
+
+model petugas {
+  id_petugas   Int    @id @db.Int
+  nama_petugas String @db.VarChar(35)
+  telp         String @db.VarChar(13)
+  level        Role
+
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id])
+
+  tanggapan tanggapan[]
+}
+
+enum Role {
+  ADMIN   @map("admin")
+  PETUGAS @map("petugas")
+}
+
+model tanggapan {
+  id_tanggapan  Int      @id @db.Int
+  id_pengaduan  Int      @db.Int
+  tgl_tanggapan DateTime @db.Date
+  tanggapan     String   @db.Text
+  id_petugas    Int      @db.Int
+
+  pengaduan pengaduan @relation(fields: [id_pengaduan], references: [id_pengaduan])
+  petugas   petugas   @relation(fields: [id_petugas], references: [id_petugas])
+}
