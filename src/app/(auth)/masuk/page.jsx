@@ -9,10 +9,8 @@ import { Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -46,7 +44,21 @@ const LoginPage = () => {
       toast.error(message);
     } else {
       toast.success("Login berhasil!");
-      router.push("/");
+      // Ambil role user dari API check-role
+      try {
+        const roleRes = await fetch("/api/auth/check-role");
+        if (!roleRes.ok) throw new Error("Gagal cek role");
+        const { role } = await roleRes.json();
+        if (role === "ADMINISTRATOR") {
+          router.push("/admin/dashboard");
+        } else if (role === "PETUGAS") {
+          router.push("/petugas/dashboard");
+        } else {
+          router.push("/masyarakat/dashboard");
+        }
+      } catch (e) {
+        router.push("/masuk");
+      }
     }
   }
 

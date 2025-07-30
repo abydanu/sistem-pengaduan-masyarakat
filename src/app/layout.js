@@ -27,7 +27,7 @@ export default function RootLayout({ children }) {
       >
         <SidebarProvider>
           <SessionsProvider>
-            <main>
+            <main className='min-h-screen w-full'>
               {children}
               <Toaster richColors />
             </main>
