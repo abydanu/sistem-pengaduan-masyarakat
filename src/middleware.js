@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-// Helper: cek apakah request valid (misal: referer, header, dsb)
+// cek apakah request valid
 function isValidRequest(request) {
-  // Contoh: hanya izinkan request dari browser, bukan direct curl/postman
-  // return request.headers.get("referer")?.includes("yourdomain.com");
-  return true; // Ubah sesuai kebutuhan
+  return true;
 }
 
-// Helper: cek apakah pathname cocok dengan salah satu pattern
+// cek apakah pathname cocok dengan salah satu pattern
 function matchesPath(pathname, patterns) {
   return patterns.some((pattern) =>
     pattern.endsWith("/*")
@@ -33,7 +31,6 @@ export async function middleware(request) {
   try {
     const { pathname } = request.nextUrl;
 
-    // Blokir akses langsung ke /api/ (kecuali /api/auth/)
     if (pathname.startsWith("/api/")) {
       if (!isValidRequest(request)) {
         return NextResponse.json(

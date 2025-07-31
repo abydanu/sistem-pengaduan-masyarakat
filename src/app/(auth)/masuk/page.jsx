@@ -44,7 +44,6 @@ const LoginPage = () => {
       toast.error(message);
     } else {
       toast.success("Login berhasil!");
-      // Ambil role user dari API check-role
       try {
         const roleRes = await fetch("/api/auth/check-role");
         if (!roleRes.ok) throw new Error("Gagal cek role");

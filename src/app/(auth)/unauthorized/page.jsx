@@ -4,7 +4,7 @@ export default function UnauthorizedPage() {
       <div className="text-center">
         <h1 className="text-4xl font-bold text-red-500">401</h1>
         <p className="mt-4 text-lg">
-          You are not authorized to access this page
+          Akses Di Tolak
         </p>
       </div>
     </div>
