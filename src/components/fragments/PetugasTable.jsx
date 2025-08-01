@@ -64,10 +64,10 @@ export function PetugasTable({ data = [], caption = "Daftar Petugas", isLoading 
           <TableRow key={petugas.id_petugas}>
             <TableCell>{petugas.id_petugas}</TableCell>
             <TableCell>{petugas.nama_petugas}</TableCell>
-            <TableCell>{petugas.user?.username}</TableCell>
+            <TableCell>{petugas.username}</TableCell>
             <TableCell>{petugas.telp || "-"}</TableCell>
             <TableCell className="text-center">
-              <Badge variant={petugas.level === "admin" ? "default" : "secondary"}>{petugas.level}</Badge>
+              <Badge variant={petugas.level === "ADMIN" ? "default" : "secondary"}>{petugas.level}</Badge>
             </TableCell>
           </TableRow>
         ))}

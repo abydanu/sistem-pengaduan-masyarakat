@@ -27,39 +27,42 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-
+  
     const res = await signIn("credentials", {
       redirect: false,
       username: form.username,
       password: form.password,
     })
-
+  
     setLoading(false)
-
+  
     if (res?.error) {
-      let message = "Login gagal.";
+      let message = "Login gagal."
       if (res.error === "CredentialsSignin") {
-        message = "Username atau password salah.";
+        message = "Username atau password salah."
       }
-      toast.error(message);
+      toast.error(message)
     } else {
-      toast.success("Login berhasil!");
-      try {
-        const roleRes = await fetch("/api/auth/check-role");
-        if (!roleRes.ok) throw new Error("Gagal cek role");
-        const { role } = await roleRes.json();
-        if (role === "ADMINISTRATOR") {
-          router.push("/admin/dashboard");
-        } else if (role === "PETUGAS") {
-          router.push("/petugas/dashboard");
+      toast.success("Login berhasil!")
+  
+      // Tunggu session ready, lalu ambil role dari token
+      const roleCheck = await fetch("/api/auth/check-role")
+      const data = await roleCheck.json()
+  
+      if (roleCheck.ok) {
+        if (data.role === "ADMIN") {
+          window.location.href = "/admin/dashboard"
+        } else if (data.role === "PETUGAS") {
+          window.location.href = "/petugas/dashboard"
         } else {
-          router.push("/masyarakat/dashboard");
+          window.location.href = "/masyarakat/dashboard"
         }
-      } catch (e) {
-        router.push("/masuk");
+      } else {
+        toast.error("Gagal mendeteksi role user.")
       }
     }
   }
+  
 
   return (
     <div className="flex h-screen w-full items-center justify-center px-4 md:px-6 lg:px-8">

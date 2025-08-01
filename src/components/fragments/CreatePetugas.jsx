@@ -12,7 +12,7 @@ export function CreatePetugas({ isOpen, onClose, onSubmit }) {
     username: "",
     password: "",
     telp: "",
-    level: "petugas", // Default level
+    level: "PETUGAS", // Default level
   })
 
   const handleChange = (e) => {
@@ -32,7 +32,7 @@ export function CreatePetugas({ isOpen, onClose, onSubmit }) {
       username: "",
       password: "",
       telp: "",
-      level: "petugas",
+      level: "PETUGAS",
     })
   }
 
@@ -100,8 +100,8 @@ export function CreatePetugas({ isOpen, onClose, onSubmit }) {
               onChange={handleChange}
               className="col-span-3 p-2 border rounded-md"
             >
-              <option value="petugas">Petugas</option>
-              <option value="admin">Admin</option>
+              <option value="PETUGAS">Petugas</option>
+              <option value="ADMIN">Admin</option>
             </select>
           </div>
           <DialogFooter>

@@ -11,30 +11,15 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
-import { toast } from "sonner" // Menggunakan sonner untuk toast
-
-export async function handleDelete(id) {
-  const confirmDelete = confirm("Yakin ingin menghapus?")
-  if (!confirmDelete) return
-  try {
-    const res = await fetch(`/api/pengaduan/${id}`, {
-      method: "DELETE",
-    })
-    if (!res.ok) throw new Error("Gagal hapus pengaduan")
-    toast.success("Pengaduan berhasil dihapus")
-    location.reload() // Reload the page to reflect changes
-  } catch (err) {
-    console.error("Error hapus:", err)
-    toast.error("Terjadi kesalahan saat menghapus")
-  }
-}
+import { toast } from "sonner"
+import { ConfirmDelete } from "@/components/common/ConfirmDelete";
+import { useSession } from "next-auth/react";
 
 export function PengaduanTable({
   data = [],
   caption = "Daftar Pengaduan Masyarakat",
   isLoading = false,
   userRole = "USER",
-  onPengaduanUpdated, // Prop untuk memicu pembaruan data di parent
 }) {
   const [selectedPengaduan, setSelectedPengaduan] = useState(null)
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
@@ -43,9 +28,10 @@ export function PengaduanTable({
   const [replyContent, setReplyContent] = useState("")
   const [editFormData, setEditFormData] = useState({
     isi_laporan: "",
-    foto: null, // Bisa berupa URL string atau File object
+    foto: null,
     status: "",
   })
+
 
   const handleOpenDetail = (pengaduan) => {
     setSelectedPengaduan(pengaduan)
@@ -59,7 +45,6 @@ export function PengaduanTable({
 
   const handleOpenReply = (pengaduan) => {
     setSelectedPengaduan(pengaduan)
-    // Isi tanggapan yang sudah ada jika ada
     setReplyContent(pengaduan.tanggapan?.[0]?.tanggapan || "")
     setReplyDialogOpen(true)
   }
@@ -69,6 +54,10 @@ export function PengaduanTable({
     setReplyContent("")
     setReplyDialogOpen(false)
   }
+
+
+  const { data: session } = useSession()
+  const PetugasId = parseInt(session?.user?.id)
 
   const handleSubmitReply = async () => {
     if (!selectedPengaduan || !replyContent.trim()) {
@@ -83,14 +72,13 @@ export function PengaduanTable({
         body: JSON.stringify({
           id_pengaduan: selectedPengaduan.id_pengaduan,
           tanggapan: replyContent,
-          // PENTING: id_petugas harus diambil dari sesi pengguna yang login
-          id_petugas: 1, // Placeholder: Ganti dengan ID petugas yang sebenarnya
+          id_petugas: PetugasId
         }),
       })
       if (!res.ok) throw new Error("Gagal mengirim tanggapan")
       toast.success("Tanggapan berhasil dikirim!")
       handleCloseReplyDialog()
-      onPengaduanUpdated && onPengaduanUpdated() // Panggil untuk memuat ulang data
+      location.reload()
     } catch (error) {
       console.error("Error submitting reply:", error)
       toast.error("Terjadi kesalahan saat mengirim tanggapan.")
@@ -149,13 +137,39 @@ export function PengaduanTable({
       if (!res.ok) throw new Error("Gagal mengedit pengaduan")
       toast.success("Pengaduan berhasil diperbarui!")
       handleCloseEditDialog()
-      onPengaduanUpdated && onPengaduanUpdated()
+      location.reload()
       location.reload()
     } catch (error) {
       console.error("Error editing pengaduan:", error)
       toast.error("Terjadi kesalahan saat mengedit pengaduan.")
     }
   }
+
+  const handleSetSelesai = async (pengaduan) => {
+    try {
+      const res = await fetch(`/api/pengaduan/${pengaduan.id_pengaduan}/selesai`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "SELESAI" }),
+      })
+      if (!res.ok) throw new Error("Gagal mengubah status menjadi SELESAI")
+      toast.success("Status pengaduan telah ditandai sebagai SELESAI")
+      location.reload()
+    } catch (error) {
+      console.error(error)
+      toast.error("Gagal mengubah status.")
+    }
+  }
+
+
+  const [previewFoto, setPreviewFoto] = useState(null)
+  const [previewOpen, setPreviewOpen] = useState(false)
+
+  const openPreview = (fotoUrl) => {
+    setPreviewFoto(fotoUrl)
+    setPreviewOpen(true)
+  }
+
 
   if (isLoading) {
     return (
@@ -164,11 +178,19 @@ export function PengaduanTable({
         <TableHeader>
           <TableRow>
             <TableHead>Tanggal</TableHead>
-            <TableHead>NIK</TableHead>
+            <TableHead>Nama</TableHead>
+            {(userRole === "ADMINISTRATOR" || userRole === "PETUGAS") && (
+              <>
+                <TableHead>NIK</TableHead>
+                <TableHead>Username</TableHead>
+              </>
+            )}
             <TableHead>Isi Laporan</TableHead>
             <TableHead>Foto</TableHead>
             <TableHead className="text-center">Status</TableHead>
-            <TableHead className="text-right">Aksi</TableHead>
+            {userRole === "USER" && (
+              <TableHead>Tanggapan</TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -177,6 +199,16 @@ export function PengaduanTable({
               <TableCell>
                 <Skeleton className="h-4 w-24" />
               </TableCell>
+              {(userRole === "ADMINISTRATOR" || userRole === "PETUGAS") && (
+                <>
+                  <TableCell>
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
+                </>
+              )}
               <TableCell>
                 <Skeleton className="h-4 w-24" />
               </TableCell>
@@ -189,6 +221,11 @@ export function PengaduanTable({
               <TableCell>
                 <Skeleton className="h-6 w-20 mx-auto" />
               </TableCell>
+              {userRole === "USER" && (
+                <TableCell>
+                  <Skeleton className="h-4 w-24" />
+                </TableCell>
+              )}
               <TableCell>
                 <Skeleton className="h-4 w-6" />
               </TableCell>
@@ -210,18 +247,32 @@ export function PengaduanTable({
         <TableHeader>
           <TableRow>
             <TableHead>Tanggal</TableHead>
-            <TableHead>NIK</TableHead>
+            <TableHead>Nama</TableHead>
+            {(userRole === "ADMINISTRATOR" || userRole === "PETUGAS") && (
+              <>
+                <TableHead>NIK</TableHead>
+                <TableHead>Username</TableHead>
+              </>
+            )}
             <TableHead>Isi Laporan</TableHead>
             <TableHead>Foto</TableHead>
             <TableHead className="text-center">Status</TableHead>
-            <TableHead className="text-right">Aksi</TableHead>
+            {userRole === "USER" && (
+              <TableHead>Tanggapan</TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((pengaduan) => (
             <TableRow key={pengaduan.id_pengaduan}>
               <TableCell>{new Date(pengaduan.tgl_pengaduan).toLocaleDateString("id-ID")}</TableCell>
-              <TableCell>{pengaduan.nik}</TableCell>
+              <TableCell>{pengaduan?.masyarakat.nama}</TableCell>
+              {(userRole === "ADMINISTRATOR" || userRole === "PETUGAS") && (
+                <>
+                  <TableCell>{pengaduan.nik}</TableCell>
+                  <TableCell>{pengaduan?.masyarakat.username}</TableCell>
+                </>
+              )}
               <TableCell className="max-w-[300px] truncate">{pengaduan.isi_laporan}</TableCell>
               <TableCell>
                 {pengaduan.foto && pengaduan.foto.length > 0 ? (
@@ -255,6 +306,14 @@ export function PengaduanTable({
                         : pengaduan.status}
                 </Badge>
               </TableCell>
+              {userRole === "USER" && (
+                <>
+                  <TableCell>{pengaduan.tanggapan?.[0]?.tanggapan
+                    ? <span>{pengaduan.tanggapan[0].tanggapan}</span>
+                    : <span className="text-sm text-muted-foreground">Belum ada tanggapan</span>}
+                  </TableCell>
+                </>
+              )}
               <TableCell className="text-right">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -265,15 +324,21 @@ export function PengaduanTable({
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => handleOpenDetail(pengaduan)}>Lihat Detail</DropdownMenuItem>
                     {/* Hanya USER yang bisa Edit atau Hapus */}
-                    {userRole === "USER" && (
+                    {userRole === "USER" && pengaduan.status === !"SELESAI" && (
                       <>
                         <DropdownMenuItem onClick={() => handleOpenEdit(pengaduan)}>Edit</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDelete(pengaduan.id_pengaduan)}>Hapus</DropdownMenuItem>
+                        <ConfirmDelete id={pengaduan.id_pengaduan} />
                       </>
                     )}
                     {/* Hanya ADMINISTRATOR atau PETUGAS yang bisa Balas */}
-                    {(userRole === "ADMINISTRATOR" || userRole === "PETUGAS") && (
+                    {(userRole === "ADMINISTRATOR" || userRole === "PETUGAS") && pengaduan.status === "KOSONG" && (
                       <DropdownMenuItem onClick={() => handleOpenReply(pengaduan)}>Balas</DropdownMenuItem>
+                    )}
+                    {(userRole === "ADMINISTRATOR" || userRole === "PETUGAS") && pengaduan.status === "PROSES" && (
+                      <DropdownMenuItem onClick={() => handleOpenReply(pengaduan)}>Edit Tanggapan</DropdownMenuItem>
+                    )}
+                    {(userRole === "ADMINISTRATOR" || userRole === "PETUGAS") && pengaduan.status === "PROSES" && (
+                      <DropdownMenuItem onClick={() => handleSetSelesai(pengaduan)}>Tandai Selesai</DropdownMenuItem>
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -281,7 +346,7 @@ export function PengaduanTable({
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </Table >
 
       {/* Detail Dialog */}
       <Dialog open={detailDialogOpen} onOpenChange={handleCloseDetailDialog}>
@@ -300,8 +365,8 @@ export function PengaduanTable({
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label>NIK</Label>
-                <Input disabled value={selectedPengaduan.nik} className="col-span-3" />
+                <Label>Nama</Label>
+                <Input disabled value={selectedPengaduan?.masyarakat.nama} className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-start gap-4">
                 <Label>Isi Laporan</Label>
@@ -309,11 +374,12 @@ export function PengaduanTable({
               </div>
               <div className="grid grid-cols-4 items-start gap-4">
                 <Label>Foto</Label>
-                {selectedPengaduan.foto && selectedPengaduan.foto.length > 0 ? (
+                {selectedPengaduan.foto ? (
                   <img
                     src={selectedPengaduan.foto.replace(/[\r\n]+/g, "") || "/placeholder.svg"}
                     alt={`Foto pengaduan ${selectedPengaduan.id_pengaduan}`}
-                    className="w-[100px] h-[60px] rounded-md object-cover col-span-3"
+                    onClick={() => openPreview(selectedPengaduan.foto.replace(/[\r\n]+/g, ""))}
+                    className="w-[100px] h-[60px] rounded-md object-cover col-span-3 cursor-pointer hover:scale-105 transition"
                   />
                 ) : (
                   <span className="text-sm text-muted-foreground col-span-3">Tidak ada foto</span>
@@ -332,21 +398,39 @@ export function PengaduanTable({
         </DialogContent>
       </Dialog>
 
+      {/* Preview Foto Dialog */}
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Preview Foto</DialogTitle>
+          </DialogHeader>
+          <img
+            src={previewFoto || "/placeholder.svg"}
+            alt="Preview Foto"
+            className="w-full max-h-[80vh] object-contain rounded-lg"
+          />
+        </DialogContent>
+      </Dialog>
+
       {/* Reply Dialog */}
-      <Dialog open={replyDialogOpen} onOpenChange={handleCloseReplyDialog}>
+      < Dialog open={replyDialogOpen} onOpenChange={handleCloseReplyDialog} >
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Balas Pengaduan</DialogTitle>
+            <DialogTitle>{selectedPengaduan?.status === "PROSES" ? "Edit Tanggapan" : "Balas Pengaduan"}</DialogTitle>
           </DialogHeader>
           {selectedPengaduan && (
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label>ID Pengaduan</Label>
-                <Input disabled value={selectedPengaduan.id_pengaduan} className="col-span-3" />
+                <Label>Tanggal</Label>
+                <Input
+                  disabled
+                  value={new Date(selectedPengaduan.tgl_pengaduan).toLocaleDateString("id-ID")}
+                  className="col-span-3"
+                />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label>NIK</Label>
-                <Input disabled value={selectedPengaduan.nik} className="col-span-3" />
+                <Label>Nama</Label>
+                <Input disabled value={selectedPengaduan.masyarakat?.nama} className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-start gap-4">
                 <Label>Isi Laporan</Label>
@@ -371,10 +455,10 @@ export function PengaduanTable({
             <Button onClick={handleSubmitReply}>Kirim Tanggapan</Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog >
 
       {/* Edit Dialog */}
-      <Dialog open={editDialogOpen} onOpenChange={handleCloseEditDialog}>
+      < Dialog open={editDialogOpen} onOpenChange={handleCloseEditDialog} >
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit Pengaduan</DialogTitle>
@@ -382,12 +466,16 @@ export function PengaduanTable({
           {selectedPengaduan && (
             <form onSubmit={handleSubmitEdit} className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label>ID Pengaduan</Label>
-                <Input disabled value={selectedPengaduan.id_pengaduan} className="col-span-3" />
+                <Label>Tanggal</Label>
+                <Input
+                  disabled
+                  value={new Date(selectedPengaduan.tgl_pengaduan).toLocaleDateString("id-ID")}
+                  className="col-span-3"
+                />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label>NIK</Label>
-                <Input disabled value={selectedPengaduan.nik} className="col-span-3" />
+                <Label>Nama</Label>
+                <Input disabled value={selectedPengaduan.masyarakat?.nama} className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-start gap-4">
                 <Label htmlFor="editIsiLaporan">Isi Laporan</Label>
@@ -423,7 +511,7 @@ export function PengaduanTable({
             </form>
           )}
         </DialogContent>
-      </Dialog>
+      </Dialog >
     </>
   )
 }

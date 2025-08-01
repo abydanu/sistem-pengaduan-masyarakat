@@ -11,22 +11,43 @@ export async function GET() {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      include: {
-        masyarakat: true,
-        petugas: true,
-      },
-    })
-
-    if (!user) {
-      return NextResponse.json({ message: 'User tidak ditemukan' }, { status: 404 })
-    }
-
     let pengaduan;
 
-    if (user.role === 'USER') {
-      if (!user.masyarakat) {
+    if (session.user.level === 'PETUGAS' || session.user.level === 'ADMIN') {
+      pengaduan = await prisma.pengaduan.findMany({
+        orderBy: { tgl_pengaduan: 'desc' },
+        select: {
+          nik: true,
+          id_pengaduan: true,
+          tgl_pengaduan: true,
+          isi_laporan: true,
+          foto: true,
+          status: true,
+          masyarakat: {
+            select: {
+              nama: true,
+              username: true,
+            },
+          },
+          tanggapan: {
+            select: {
+              tgl_tanggapan: true,
+              tanggapan: true,
+              petugas: true
+            },
+          },
+        },
+        take: 10,
+      })
+    }
+
+    else {
+      const masyarakat = await prisma.masyarakat.findUnique({
+        where: { username: session.user.username },
+        select: { nik: true },
+      })
+
+      if (!masyarakat) {
         return NextResponse.json(
           { message: 'Data masyarakat tidak ditemukan' },
           { status: 404 }
@@ -34,45 +55,28 @@ export async function GET() {
       }
 
       pengaduan = await prisma.pengaduan.findMany({
-        where: { nik: user.masyarakat.nik },
+        where: { nik: masyarakat.nik },
         orderBy: { tgl_pengaduan: 'desc' },
-        include: {
-          tanggapan: {
-            include: {
-              petugas: {
-                select: {
-                  nama_petugas: true,
-                },
-              },
-            },
-          },
-        },
-      })
-    } else if (user.role === 'PETUGAS' || user.role === 'ADMINISTRATOR') {
-      pengaduan = await prisma.pengaduan.findMany({
-        orderBy: { tgl_pengaduan: 'desc' },
-        include: {
+        select: {
+          nik: true,
+          id_pengaduan: true,
+          tgl_pengaduan: true,
+          isi_laporan: true,
+          foto: true,
+          status: true,
           masyarakat: {
             select: {
-              nama: true,
-              nik: true,
-              telp: true,
+              nama: true
             },
           },
           tanggapan: {
-            include: {
-              petugas: {
-                select: {
-                  nama_petugas: true,
-                  level: true,
-                },
+            select: {
+              tanggapan: true,
               },
-            },
           },
         },
+        take: 20,
       })
-    } else {
-      return NextResponse.json({ message: 'Role tidak dikenali' }, { status: 403 })
     }
 
     return NextResponse.json({ pengaduan }, { status: 200 })

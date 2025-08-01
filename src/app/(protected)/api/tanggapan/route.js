@@ -26,7 +26,6 @@ export async function POST(request) {
         },
       })
     } else {
-      // Create new tanggapan
       newTanggapan = await prisma.tanggapan.create({
         data: {
           id_pengaduan: id_pengaduan,

@@ -7,13 +7,9 @@ export async function GET() {
       select: {
         id_petugas: true,
         nama_petugas: true,
+        username: true,
         telp: true,
         level: true,
-        user: {
-            select: {
-                username: true
-            }
-        }
       },
       orderBy: {
         nama_petugas: "asc",

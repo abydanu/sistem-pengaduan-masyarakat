@@ -13,27 +13,41 @@ export const authOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        const user = await prisma.user.findUnique({
-          where: { username: credentials.username },
+        const { username, password } = credentials;
+
+        const petugas = await prisma.petugas.findUnique({
+          where: { username },
         });
 
-        if (!user) {
-          throw new Error ("User tidak di temukan!")
-        };
+        if (petugas) {
+          const isValid = await bcrypt.compare(password, petugas.password);
+          if (!isValid) return null;
 
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
+          return {
+            id: petugas.id_petugas,
+            name: petugas.nama_petugas,
+            username: username,
+            level: petugas.level,
+          };
+        }
 
-        if (!isValid) return null;
+        const masyarakat = await prisma.masyarakat.findUnique({
+          where: { username },
+        });
 
-        return {
-          id: user.id,
-          name: user.name,
-          username: user.username,
-          role: user.role,
-        };
+        if (masyarakat) {
+          const isValid = await bcrypt.compare(password, masyarakat.password);
+          if (!isValid) return null;
+
+          return {
+            id: masyarakat.nik,
+            name: masyarakat.nama,
+            username: username,
+            level: "MASYARAKAT"
+          };
+        }
+
+        throw new Error('Akun tidak ditemukan!');
       },
     }),
   ],
@@ -43,17 +57,16 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
-        token.id = user.id;
+        token.level = user.level || null;
+        token.username = user.username;
+        token.id = user.id || null;
       }
       return token;
     },
-
     async session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role;
-        session.user.id = token.id;
-      }
+      session.user.level = token.level || null;
+      session.user.username = token.username || null;
+      session.user.id = token.sub || token.id;
       return session;
     },
   },

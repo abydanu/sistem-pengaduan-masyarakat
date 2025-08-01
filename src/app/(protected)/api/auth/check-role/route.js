@@ -8,5 +8,6 @@ export async function GET(req) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json({ role: token.role });
+  return NextResponse.json({ role: token.level || 'masyarakat'});
 }
+

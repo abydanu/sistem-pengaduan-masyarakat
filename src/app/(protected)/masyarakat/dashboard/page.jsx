@@ -1,14 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileWarning, Users, MessageCircleReply, TrendingUp } from "lucide-react"
 import { useSession } from "next-auth/react"
 
 export default function UsersDashboard() {
-  const [isLoading, setIsLoading] = useState(true)
-  const [dashboardData, setDashboardData] = useState(null)
-
   const { data: session } = useSession();
   const name = session?.user?.name
 

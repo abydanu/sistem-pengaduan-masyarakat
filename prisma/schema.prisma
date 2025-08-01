@@ -13,48 +13,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  username  String   @unique
-  password  String
-  role      UserRole @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  masyarakat masyarakat?
-  petugas    petugas?
-
-  @@map("users")
-}
-
-enum UserRole {
-  USER
-  PETUGAS
-  ADMINISTRATOR
-}
-
 model masyarakat {
-  nik      String     @id @db.Char(16)
-  nama     String     @db.VarChar(35)
-  telp     String     @db.VarChar(13)
-
-  userId   String?    @unique
-  user     User?      @relation(fields: [userId], references: [id])
+  nik      String @id @db.Char(16)
+  username String @unique @db.VarChar(25)
+  password String @db.VarChar(100)
+  nama     String @db.VarChar(35)
+  telp     String @db.VarChar(13)
 
   pengaduan pengaduan[]
 }
 
 model pengaduan {
-  id_pengaduan  Int        @id @default(autoincrement())
-  tgl_pengaduan DateTime   @db.Date
-  nik           String     @db.Char(16)
-  isi_laporan   String     @db.Text
-  foto          String     @db.LongText
+  id_pengaduan  Int      @id @default(autoincrement())
+  tgl_pengaduan DateTime @db.Date
+  nik           String   @db.Char(16)
+  isi_laporan   String   @db.Text
+  foto          String   @db.LongText
   status        Status
 
-  masyarakat    masyarakat @relation(fields: [nik], references: [nik], onDelete: Cascade)
-  tanggapan     tanggapan[]
+  masyarakat masyarakat  @relation(fields: [nik], references: [nik], onDelete: Cascade)
+  tanggapan  tanggapan[]
 }
 
 enum Status {
@@ -64,15 +42,14 @@ enum Status {
 }
 
 model petugas {
-  id_petugas   Int      @id @default(autoincrement())
-  nama_petugas String   @db.VarChar(35)
-  telp         String   @db.VarChar(13)
+  id_petugas   Int    @id @default(autoincrement())
+  nama_petugas String @db.VarChar(35)
+  username     String @unique @db.VarChar(25)
+  password     String @db.VarChar(100)
+  telp         String @db.VarChar(13)
   level        Role
 
-  userId       String?  @unique
-  user         User?    @relation(fields: [userId], references: [id])
-
-  tanggapan    tanggapan[]
+  tanggapan tanggapan[]
 }
 
 enum Role {
@@ -81,12 +58,12 @@ enum Role {
 }
 
 model tanggapan {
-  id_tanggapan  Int        @id @default(autoincrement())
+  id_tanggapan  Int      @id @default(autoincrement())
   id_pengaduan  Int
-  tgl_tanggapan DateTime   @db.Date
-  tanggapan     String     @db.Text
+  tgl_tanggapan DateTime @db.Date
+  tanggapan     String   @db.Text
   id_petugas    Int
 
-  pengaduan     pengaduan  @relation(fields: [id_pengaduan], references: [id_pengaduan], onDelete: Cascade)
-  petugas       petugas    @relation(fields: [id_petugas], references: [id_petugas], onDelete: Cascade)
+  pengaduan pengaduan @relation(fields: [id_pengaduan], references: [id_pengaduan], onDelete: Cascade)
+  petugas   petugas   @relation(fields: [id_petugas], references: [id_petugas], onDelete: Cascade)
 }

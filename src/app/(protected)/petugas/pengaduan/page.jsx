@@ -65,7 +65,7 @@ export default function AdminPengaduanPage() {
       <Card>
         <CardHeader>
           <CardTitle>Pengaduan</CardTitle>
-          <CardDescription>Berikut adalah daftar pengaduan yang telah Anda laporkan.</CardDescription>
+          <CardDescription>Berikut adalah daftar pengaduan yang telah di laporkan.</CardDescription>
         </CardHeader>
         <CardContent>
           <PengaduanTable data={pengaduanData} isLoading={loading} userRole={currentUserRole} />

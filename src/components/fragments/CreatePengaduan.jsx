@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useSession } from "next-auth/react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,16 +9,17 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 
 export function CreatePengaduan({ isOpen, onClose, onSubmit }) {
-  const [nik, setNik] = useState("")
+  const { data: session } = useSession()
+  const nik = session?.user?.id || "" 
+
   const [isiLaporan, setIsiLaporan] = useState("")
   const [foto, setFoto] = useState(null)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!nik || !isiLaporan || !foto) return
+    if (!isiLaporan || !foto || !nik) return
 
     await onSubmit({ nik, isi_laporan: isiLaporan, foto })
-    setNik("")
     setIsiLaporan("")
     setFoto(null)
   }
@@ -29,15 +31,6 @@ export function CreatePengaduan({ isOpen, onClose, onSubmit }) {
           <DialogTitle>Buat Laporan Baru</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="nik" className="mb-2">NIK</Label>
-            <Input
-              id="nik"
-              value={nik}
-              onChange={(e) => setNik(e.target.value)}
-              required
-            />
-          </div>
           <div>
             <Label htmlFor="isi_laporan" className="mb-2">Isi Laporan</Label>
             <Textarea

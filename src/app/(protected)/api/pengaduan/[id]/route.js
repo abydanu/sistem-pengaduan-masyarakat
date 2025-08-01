@@ -1,29 +1,22 @@
-import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
-// ✅ PUT - Update data pengaduan
 export async function PUT(request, { params }) {
   const id = parseInt(params.id);
 
   try {
     const formData = await request.formData();
 
-    const isi_laporan = formData.get("isi_laporan");
-    const status = formData.get("status");
-    const foto = formData.get("foto");
-    const existingFotoUrl = formData.get("existing_foto_url");
+    const isi_laporan = formData.get('isi_laporan');
+    const status = formData.get('status');
+    const foto = formData.get('foto');
+    const existingFoto = formData.get('existing_foto'); 
 
-    let finalFotoUrl = existingFotoUrl || "";
+    let finalFotoBase64 = existingFoto || '';
 
-    // Kalau user mengupload file baru
-    if (foto && typeof foto.name === "string" && foto.size > 0) {
-      const uploaded = await uploadFile(foto);
-      finalFotoUrl = uploaded.url;
-
-      // Hapus file lama jika ada
-      if (existingFotoUrl && existingFotoUrl.startsWith("https://")) {
-        await deleteFile(existingFotoUrl);
-      }
+    if (foto && typeof foto.name === 'string' && foto.size > 0) {
+      const buffer = Buffer.from(await foto.arrayBuffer());
+      finalFotoBase64 = `data:${foto.type};base64,${buffer.toString('base64')}`;
     }
 
     const updated = await prisma.pengaduan.update({
@@ -31,29 +24,34 @@ export async function PUT(request, { params }) {
       data: {
         isi_laporan,
         status,
-        foto: finalFotoUrl,
+        foto: finalFotoBase64,
       },
     });
 
     return NextResponse.json(updated);
   } catch (error) {
-    console.error("Gagal update pengaduan:", error);
-    return NextResponse.json({ error: "Gagal update pengaduan" }, { status: 500 });
+    console.error('Gagal update pengaduan:', error);
+    return NextResponse.json(
+      { error: 'Gagal update pengaduan' },
+      { status: 500 }
+    );
   }
 }
 
-// ✅ DELETE - Hapus data pengaduan
 export async function DELETE(request, { params }) {
-  const id = params.id // ⛔ JANGAN pakai `await` di sini
+  const id = params.id;
 
   try {
     await prisma.pengaduan.delete({
       where: { id_pengaduan: parseInt(id) },
-    })
+    });
 
-    return NextResponse.json({ message: "Berhasil dihapus" })
+    return NextResponse.json({ message: 'Berhasil dihapus' });
   } catch (error) {
-    console.error("Gagal hapus pengaduan:", error)
-    return NextResponse.json({ error: "Gagal hapus pengaduan" }, { status: 500 })
+    console.error('Gagal hapus pengaduan:', error);
+    return NextResponse.json(
+      { error: 'Gagal hapus pengaduan' },
+      { status: 500 }
+    );
   }
 }
