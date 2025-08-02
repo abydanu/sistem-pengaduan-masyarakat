@@ -1,12 +1,6 @@
 import { LayoutDashboard, FileWarning, Send } from "lucide-react"
 
 export const petugasNavigation = {
-  user: {
-    name: "PETUGAS LAPANGAN",
-    username: "petugas01",
-    avatar: "/avatars/petugas.jpg",
-    role: "Petugas",
-  },
   branding: {
     title: "Sistem Pengaduan",
     subtitle: "Panel Petugas",

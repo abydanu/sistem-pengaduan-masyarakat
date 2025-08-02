@@ -45,7 +45,6 @@ const LoginPage = () => {
     } else {
       toast.success("Login berhasil!")
   
-      // Tunggu session ready, lalu ambil role dari token
       const roleCheck = await fetch("/api/auth/check-role")
       const data = await roleCheck.json()
   
@@ -113,7 +112,7 @@ const LoginPage = () => {
             </div>
             <p variant="link" className="text-center text-sm text-gray-600 mt-2">
               Belum punya akun?{" "}
-              <Link href="/daftar" className="text-blue-600 hover:underline">Daftar</Link>
+              <Link href="/daftar" className="text-emerald-600 hover:underline">Daftar</Link>
             </p>
           </form>
         </CardContent>

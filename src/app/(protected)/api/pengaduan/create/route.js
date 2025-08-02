@@ -23,6 +23,10 @@ export async function POST(request) {
       );
     }
 
+    const existPengaduan = await prisma.pengaduan.findFirst({
+      
+    })
+
     const buffer = Buffer.from(await foto.arrayBuffer());
     const base64String = `data:${foto.type};base64,${buffer.toString(
       'base64'

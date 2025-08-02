@@ -12,7 +12,7 @@ export async function GET() {
         level: true,
       },
       orderBy: {
-        nama_petugas: "asc",
+        nama_petugas: "desc",
       },
     })
     return NextResponse.json({ petugas }, { status: 200 })

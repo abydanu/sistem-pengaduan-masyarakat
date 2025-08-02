@@ -58,6 +58,7 @@ export const authOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.level = user.level || null;
+        token.name = user.name;
         token.username = user.username;
         token.id = user.id || null;
       }
@@ -65,6 +66,7 @@ export const authOptions = {
     },
     async session({ session, token }) {
       session.user.level = token.level || null;
+      session.user.name = token.name || null;
       session.user.username = token.username || null;
       session.user.id = token.sub || token.id;
       return session;

@@ -10,7 +10,6 @@ export async function POST(req) {
       return NextResponse.json({ message: 'Semua kolom harus diisi!' }, { status: 400 });
     }
 
-    // Cek apakah NIK sudah ada
     const existingNIK = await prisma.masyarakat.findUnique({
       where: { nik },
     });

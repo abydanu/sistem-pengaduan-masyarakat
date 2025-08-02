@@ -11,7 +11,6 @@ export function PetugasTable({ data = [], caption = "Daftar Petugas", isLoading 
         <TableCaption>{caption}</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
             <TableHead>Nama</TableHead>
             <TableHead>Username</TableHead>
             <TableHead>Telepon</TableHead>
@@ -19,11 +18,8 @@ export function PetugasTable({ data = [], caption = "Daftar Petugas", isLoading 
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Array.from({ length: 5 }).map((_, i) => (
+          {Array.from({ length: 4 }).map((_, i) => (
             <TableRow key={i}>
-              <TableCell>
-                <Skeleton className="h-4 w-12" />
-              </TableCell>
               <TableCell>
                 <Skeleton className="h-4 w-32" />
               </TableCell>
@@ -52,7 +48,6 @@ export function PetugasTable({ data = [], caption = "Daftar Petugas", isLoading 
       <TableCaption>{caption}</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead>ID</TableHead>
           <TableHead>Nama</TableHead>
           <TableHead>Username</TableHead>
           <TableHead>Telepon</TableHead>
@@ -62,7 +57,6 @@ export function PetugasTable({ data = [], caption = "Daftar Petugas", isLoading 
       <TableBody>
         {data.map((petugas) => (
           <TableRow key={petugas.id_petugas}>
-            <TableCell>{petugas.id_petugas}</TableCell>
             <TableCell>{petugas.nama_petugas}</TableCell>
             <TableCell>{petugas.username}</TableCell>
             <TableCell>{petugas.telp || "-"}</TableCell>

@@ -27,7 +27,6 @@ export async function POST(request) {
 
     const hashedPassword = await hash(password, 10)
 
-    // Buat petugas langsung
     const newPetugas = await prisma.petugas.create({
       data: {
         nama_petugas,

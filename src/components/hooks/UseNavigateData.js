@@ -7,7 +7,6 @@ export function useNavigationData(navigationData, delay = 1000) {
   const [data, setData] = useState(null)
 
   useEffect(() => {
-    // Simulate loading delay (in real app, this would be API call)
     const timer = setTimeout(() => {
       setData(navigationData)
       setIsLoading(false)

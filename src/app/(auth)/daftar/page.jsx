@@ -7,10 +7,8 @@ import { Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -147,7 +145,7 @@ export default function RegisterPage() {
             </Button>
             <p variant="link" className="text-center text-sm text-gray-600 -mt-4">
               Sudah punya akun?{" "}
-              <Link href="/masuk" className="text-blue-600 hover:underline">Masuk</Link>
+              <Link href="/masuk" className="text-emerald-600 hover:underline">Masuk</Link>
             </p>
           </form>
         </CardContent>

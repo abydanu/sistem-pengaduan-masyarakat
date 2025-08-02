@@ -324,7 +324,7 @@ export function PengaduanTable({
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => handleOpenDetail(pengaduan)}>Lihat Detail</DropdownMenuItem>
                     {/* Hanya USER yang bisa Edit atau Hapus */}
-                    {userRole === "USER" && pengaduan.status === !"SELESAI" && (
+                    {userRole === "USER" && pengaduan.status !== "SELESAI" && (
                       <>
                         <DropdownMenuItem onClick={() => handleOpenEdit(pengaduan)}>Edit</DropdownMenuItem>
                         <ConfirmDelete id={pengaduan.id_pengaduan} />

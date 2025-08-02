@@ -1,11 +1,6 @@
 import { LayoutDashboard, FileWarning, Users, Send } from "lucide-react"
 
 export const adminNavigation = {
-  user: {
-    name: "ADMIN PENGADUAN",
-    username: "admin",
-    role: "Administrator",
-  },
   branding: {
     title: "Sistem Pengaduan",
     subtitle: "Admin Panel",

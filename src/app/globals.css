@@ -45,71 +45,105 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.705 0.015 286.067);
+  /* Default theme - Dark emerald theme */
+  --background: oklch(0.15 0.002 240); /* Dark slate background */
+  --foreground: oklch(0.98 0 0); /* Almost white text */
+  --card: oklch(0.18 0.004 240); /* Slightly lighter slate for cards */
+  --card-foreground: oklch(0.98 0 0); /* White text on cards */
+  --popover: oklch(0.18 0.004 240); /* Slate popover */
+  --popover-foreground: oklch(0.98 0 0); /* White popover text */
+  
+  /* Primary - Emerald (bright for dark background) */
+  --primary: oklch(0.56 0.155 162.4); /* Bright emerald */
+  --primary-foreground: oklch(0.05 0.002 240); /* Very dark text on emerald */
+  
+  /* Secondary - Medium slate */
+  --secondary: oklch(0.25 0.004 240); /* Medium slate */
+  --secondary-foreground: oklch(0.98 0 0); /* White text */
+  
+  /* Muted - Darker slate */
+  --muted: oklch(0.22 0.004 240); /* Darker slate */
+  --muted-foreground: oklch(0.65 0.006 240); /* Light gray text */
+  
+  /* Accent - Dark emerald accent */
+  --accent: oklch(0.22 0.02 162.4); /* Dark emerald accent */
+  --accent-foreground: oklch(0.98 0 0); /* White text on accent */
+  
+  /* Destructive - Brighter red for dark mode */
+  --destructive: oklch(0.65 0.22 25); /* Brighter red */
+  
+  /* Borders and inputs - Subtle in dark mode */
+  --border: oklch(0.25 0.004 240); /* Medium slate border */
+  --input: oklch(0.25 0.004 240); /* Medium slate input border */
+  --ring: oklch(0.56 0.155 162.4); /* Bright emerald focus ring */
+  
+  /* Charts - Dark mode friendly */
+  --chart-1: oklch(0.56 0.155 162.4); /* Bright emerald */
+  --chart-2: oklch(0.65 0.006 240); /* Light slate */
+  --chart-3: oklch(0.45 0.008 240); /* Medium slate */
+  --chart-4: oklch(0.7 0.12 162.4); /* Very light emerald */
+  --chart-5: oklch(0.8 0.08 162.4); /* Pale emerald */
+  
+  /* Sidebar - Dark slate theme */
+  --sidebar: oklch(0.12 0.002 240); /* Very dark slate sidebar */
+  --sidebar-foreground: oklch(0.98 0 0); /* White text */
+  --sidebar-primary: oklch(0.56 0.155 162.4); /* Bright emerald */
+  --sidebar-primary-foreground: oklch(0.05 0.002 240); /* Dark text on emerald */
+  --sidebar-accent: oklch(0.22 0.02 162.4); /* Dark emerald accent */
+  --sidebar-accent-foreground: oklch(0.98 0 0); /* White text on accent */
+  --sidebar-border: oklch(0.25 0.004 240); /* Medium slate border */
+  --sidebar-ring: oklch(0.56 0.155 162.4); /* Bright emerald focus ring */
 }
 
 .dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.92 0.004 286.32);
-  --primary-foreground: oklch(0.21 0.006 285.885);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.552 0.016 285.938);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.552 0.016 285.938);
+  /* Light theme as alternative - White backgrounds with emerald accents */
+  --background: oklch(1 0 0); /* Pure white */
+  --foreground: oklch(0.15 0.002 240); /* Dark slate for text */
+  --card: oklch(1 0 0); /* White cards */
+  --card-foreground: oklch(0.15 0.002 240); /* Dark slate text on cards */
+  --popover: oklch(1 0 0); /* White popover */
+  --popover-foreground: oklch(0.15 0.002 240); /* Dark slate popover text */
+  
+  /* Primary - Emerald theme */
+  --primary: oklch(0.498 0.155 162.4); /* Emerald-600 equivalent */
+  --primary-foreground: oklch(1 0 0); /* White text on emerald */
+  
+  /* Secondary - Light gray */
+  --secondary: oklch(0.97 0.002 240); /* Very light gray */
+  --secondary-foreground: oklch(0.15 0.002 240); /* Dark slate text */
+  
+  /* Muted - Gray tones */
+  --muted: oklch(0.96 0.002 240); /* Light gray background */
+  --muted-foreground: oklch(0.45 0.006 240); /* Medium gray text */
+  
+  /* Accent - Subtle emerald */
+  --accent: oklch(0.96 0.008 162.4); /* Very light emerald */
+  --accent-foreground: oklch(0.15 0.002 240); /* Dark text on accent */
+  
+  /* Destructive - Red for errors */
+  --destructive: oklch(0.577 0.245 27.325); /* Red */
+  
+  /* Borders and inputs */
+  --border: oklch(0.89 0.002 240); /* Light gray border */
+  --input: oklch(0.89 0.002 240); /* Light gray input border */
+  --ring: oklch(0.498 0.155 162.4); /* Emerald focus ring */
+  
+  /* Charts - Emerald and complementary colors */
+  --chart-1: oklch(0.498 0.155 162.4); /* Emerald */
+  --chart-2: oklch(0.45 0.006 240); /* Slate */
+  --chart-3: oklch(0.35 0.008 240); /* Dark slate */
+  --chart-4: oklch(0.6 0.12 162.4); /* Light emerald */
+  --chart-5: oklch(0.7 0.08 162.4); /* Very light emerald */
+  
+  /* Sidebar - Clean white/emerald theme */
+  --sidebar: oklch(1 0 0); /* White sidebar */
+  --sidebar-foreground: oklch(0.15 0.002 240); /* Dark text */
+  --sidebar-primary: oklch(0.498 0.155 162.4); /* Emerald primary */
+  --sidebar-primary-foreground: oklch(1 0 0); /* White text on emerald */
+  --sidebar-accent: oklch(0.96 0.008 162.4); /* Light emerald accent */
+  --sidebar-accent-foreground: oklch(0.15 0.002 240); /* Dark text on accent */
+  --sidebar-border: oklch(0.89 0.002 240); /* Light border */
+  --sidebar-ring: oklch(0.498 0.155 162.4); /* Emerald focus ring */
 }
 
 @layer base {
@@ -118,5 +152,6 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-poppins), sans-serif;
   }
 }
