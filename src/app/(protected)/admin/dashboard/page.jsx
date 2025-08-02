@@ -1,17 +1,27 @@
 "use client"
-
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileWarning, Users, MessageCircleReply, TrendingUp } from "lucide-react"
+import { useSession } from "next-auth/react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function AdminDashboard() {
+  const { data: session, status } = useSession()
+
+  const isLoading = status === "loading";
+  const name = session?.user?.name;
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard Admin</h1>
-        <p className="text-muted-foreground">Selamat datang di panel admin sistem pengaduan</p>
-      </div>
+      {isLoading ? (
+        <>
+          <Skeleton className="h-8 w-1/3"/>
+          <Skeleton className="h-5 w-2/3"/>
+        </>
+      ) : (
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard Admin</h1>
+          <p className="text-muted-foreground">Halo <span className="font-bold">{name}</span>, Selamat datang di panel Admin</p>
+        </div>
+      )}
     </div>
   )
-  }
+}
 

@@ -24,7 +24,7 @@ export function GenerateLaporanButton() {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="SEMUA">Semua</SelectItem>
-          <SelectItem value="0">Terkirim</SelectItem>
+          <SelectItem value="0">Pending</SelectItem>
           <SelectItem value="PROSES">Diproses</SelectItem>
           <SelectItem value="SELESAI">Selesai</SelectItem>
         </SelectContent>
