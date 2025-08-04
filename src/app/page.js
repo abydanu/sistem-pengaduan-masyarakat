@@ -75,10 +75,9 @@ export default function Home() {
               <div className="flex items-center">
                 <a href="#beranda" className="text-gray-300 hover:text-emerald-400 px-3 py-2 text-sm font-medium transition-colors">Beranda</a>
                 <a href="#layanan" className="text-gray-300 hover:text-emerald-400 px-3 py-2 text-sm font-medium transition-colors">Layanan</a>
-                <a href="#tentang" className="text-gray-300 hover:text-emerald-400 px-3 py-2 text-sm font-medium transition-colors">Tentang</a>
-                <a href="#kontak" className="text-gray-300 hover:text-emerald-400 px-3 py-2 text-sm font-medium transition-colors">Kontak</a>
+                <a href="#faq" className="text-gray-300 hover:text-emerald-400 px-3 py-2 text-sm font-medium transition-colors">FAQ</a>
                 <Button className="bg-emerald-600 hover:bg-emerald-700 text-white hover:cursor-pointer" onClick={() => router.push("/masuk")}>
-                  Buat Pengaduan
+                  Masuk
                 </Button>
               </div>
             </div>
@@ -98,10 +97,9 @@ export default function Home() {
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               <a href="#beranda" className="block px-3 py-2 text-gray-300 hover:text-emerald-400">Beranda</a>
               <a href="#layanan" className="block px-3 py-2 text-gray-300 hover:text-emerald-400">Layanan</a>
-              <a href="#tentang" className="block px-3 py-2 text-gray-300 hover:text-emerald-400">Tentang</a>
-              <a href="#kontak" className="block px-3 py-2 text-gray-300 hover:text-emerald-400">Kontak</a>
+              <a href="#faq" className="block px-3 py-2 text-gray-300 hover:text-emerald-400">FAQ</a>
               <Button className="w-full mt-4 bg-emerald-600 hover:bg-emerald-700 text-white hover:cursor-pointer" onClick={() => router.push("/masuk")}>
-                Buat Pengaduan
+                Masuk
               </Button>
             </div>
           </div>
