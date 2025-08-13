@@ -41,7 +41,7 @@ export async function GET(request) {
       body: pengaduan.map((p, i) => [
         i + 1,
         p.masyarakat?.nama || "-",
-        p.isi_laporan.length > 40 ? p.isi_laporan.slice(0, 40) + "..." : p.isi_laporan,
+        p.isi_laporan,
         new Date(p.tgl_pengaduan).toLocaleDateString("id-ID"),
         p.status || "-",
       ]),
@@ -68,7 +68,7 @@ export async function GET(request) {
         4: { halign: "center", cellWidth: 30 },
       },
     })
-    
+
     const now = new Date()
     const tglCetak = now.toLocaleDateString("id-ID", {
       weekday: "long",
