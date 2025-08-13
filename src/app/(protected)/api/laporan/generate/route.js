@@ -6,34 +6,46 @@ import autoTable from "jspdf-autotable"
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url)
-    const status = searchParams.get("status")
-    const whereClause = status && status !== "SEMUA" ? { status } : {}
+    const start = searchParams.get("start") // YYYY-MM-DD
+    const end = searchParams.get("end") // YYYY-MM-DD
+
+    if (!start || !end) {
+      return NextResponse.json({ error: "Tanggal awal dan akhir wajib diisi!" }, { status: 400 })
+    }
+
+    const startDate = new Date(`${start}T00:00:00`)
+    const endDate = new Date(`${end}T23:59:59`)
 
     const pengaduan = await prisma.pengaduan.findMany({
-      where: whereClause,
+      where: {
+        tgl_pengaduan: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
       include: { masyarakat: true },
       orderBy: { tgl_pengaduan: "desc" },
     })
 
-    if(!pengaduan || pengaduan.length === 0) {
+    if (!pengaduan || pengaduan.length === 0) {
       return NextResponse.json(
-        { error: "Tidak ada data untuk di ekspor!" },
+        { error: "Tidak ada data di rentang tanggal tersebut!" },
         { status: 404 }
       )
     }
 
     const doc = new jsPDF("p", "mm", "a4")
-
     doc.setFont("helvetica", "bold")
     doc.setFontSize(16)
     doc.text("LAPORAN PENGADUAN MASYARAKAT", 105, 20, { align: "center" })
 
     doc.setFontSize(11)
     doc.setFont("helvetica", "normal")
-
-    if (status) {
-      doc.text(`Status: ${status === "SEMUA" ? "Semua" : status}`, 14, 30)
-    }
+    doc.text(
+      `Rentang: ${startDate.toLocaleDateString("id-ID")} - ${endDate.toLocaleDateString("id-ID")}`,
+      14,
+      30
+    )
 
     autoTable(doc, {
       startY: 35,
@@ -45,21 +57,10 @@ export async function GET(request) {
         new Date(p.tgl_pengaduan).toLocaleDateString("id-ID"),
         p.status || "-",
       ]),
-      styles: {
-        fontSize: 10,
-        cellPadding: 3,
-      },
-      headStyles: {
-        fillColor: [25, 118, 210],
-        textColor: [255, 255, 255],
-        halign: "center",
-      },
-      bodyStyles: {
-        valign: "middle",
-      },
-      alternateRowStyles: {
-        fillColor: [245, 245, 245],
-      },
+      styles: { fontSize: 10, cellPadding: 3 },
+      headStyles: { fillColor: [25, 118, 210], textColor: [255, 255, 255], halign: "center" },
+      bodyStyles: { valign: "middle" },
+      alternateRowStyles: { fillColor: [245, 245, 245] },
       columnStyles: {
         0: { halign: "center", cellWidth: 10 },
         1: { cellWidth: 35 },
@@ -69,16 +70,17 @@ export async function GET(request) {
       },
     })
 
-    const now = new Date()
-    const tglCetak = now.toLocaleDateString("id-ID", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-
     doc.setFontSize(10)
-    doc.text(`Dicetak pada: ${tglCetak}`, 14, doc.internal.pageSize.getHeight() - 10)
+    doc.text(
+      `Dicetak pada: ${new Date().toLocaleDateString("id-ID", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })}`,
+      14,
+      doc.internal.pageSize.getHeight() - 10
+    )
 
     const pdfOutput = doc.output("arraybuffer")
 
@@ -86,7 +88,7 @@ export async function GET(request) {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": "attachment; filename=laporan_pengaduan.pdf",
+        "Content-Disposition": `attachment; filename=laporan_pengaduan_${start}_${end}.pdf`,
       },
     })
   } catch (error) {
