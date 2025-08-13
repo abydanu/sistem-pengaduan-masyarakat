@@ -15,9 +15,15 @@ export async function GET(request) {
       orderBy: { tgl_pengaduan: "desc" },
     })
 
+    if(!pengaduan || pengaduan.length === 0) {
+      return NextResponse.json(
+        { error: "Tidak ada data untuk di ekspor!" },
+        { status: 404 }
+      )
+    }
+
     const doc = new jsPDF("p", "mm", "a4")
 
-    // Header
     doc.setFont("helvetica", "bold")
     doc.setFontSize(16)
     doc.text("LAPORAN PENGADUAN MASYARAKAT", 105, 20, { align: "center" })
@@ -25,12 +31,10 @@ export async function GET(request) {
     doc.setFontSize(11)
     doc.setFont("helvetica", "normal")
 
-    // Tampilkan status hanya jika ada
     if (status) {
       doc.text(`Status: ${status === "SEMUA" ? "Semua" : status}`, 14, 30)
     }
 
-    // Tabel
     autoTable(doc, {
       startY: 35,
       head: [["No", "Nama", "Isi Laporan", "Tanggal", "Status"]],
@@ -46,7 +50,7 @@ export async function GET(request) {
         cellPadding: 3,
       },
       headStyles: {
-        fillColor: [25, 118, 210], // biru tua seperti Tailwind blue-600
+        fillColor: [25, 118, 210],
         textColor: [255, 255, 255],
         halign: "center",
       },
@@ -64,8 +68,7 @@ export async function GET(request) {
         4: { halign: "center", cellWidth: 30 },
       },
     })
-
-    // Tanggal cetak
+    
     const now = new Date()
     const tglCetak = now.toLocaleDateString("id-ID", {
       weekday: "long",
