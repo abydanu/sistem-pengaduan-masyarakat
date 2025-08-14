@@ -12,7 +12,7 @@ export async function GET(request) {
     if (!start || !end) {
       return NextResponse.json({ error: "Tanggal awal dan akhir wajib diisi!" }, { status: 400 })
     }
-
+    
     const startDate = new Date(`${start}T00:00:00`)
     const endDate = new Date(`${end}T23:59:59`)
 
