@@ -20,9 +20,18 @@ export function CreatePengaduan({ isOpen, onClose, onSubmit }) {
     e.preventDefault()
     if (!isiLaporan || !foto || !nik) return
 
-    await onSubmit({ nik, isi_laporan: isiLaporan, foto })
-    setIsiLaporan("")
-    setFoto(null)
+    setLoading(true)
+
+    try {
+      await onSubmit({ nik, isi_laporan: isiLaporan, foto })
+      setIsiLaporan("")
+      setFoto(null)
+      onClose()
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -52,7 +61,7 @@ export function CreatePengaduan({ isOpen, onClose, onSubmit }) {
             />
           </div>
           <div className="flex justify-end">
-            <Button type="submit" onClick={() => setLoading(!loading)}>{loading ? "Mengirim...." : "Kirim Laporan"}</Button>
+            <Button type="submit" disabled={loading}>{loading ? "Mengirim...." : "Kirim Laporan"}</Button>
           </div>
         </form>
       </DialogContent>
