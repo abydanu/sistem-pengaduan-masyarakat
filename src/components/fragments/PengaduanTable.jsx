@@ -25,6 +25,7 @@ export function PengaduanTable({
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
   const [replyDialogOpen, setReplyDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [replyContent, setReplyContent] = useState("")
   const [editFormData, setEditFormData] = useState({
     isi_laporan: "",
@@ -66,6 +67,7 @@ export function PengaduanTable({
     }
 
     try {
+      setLoading(true)
       const res = await fetch("/api/tanggapan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -80,10 +82,13 @@ export function PengaduanTable({
       handleCloseReplyDialog()
       location.reload()
     } catch (error) {
-      console.error("Error submitting reply:", error)
+      console.error(error)
       toast.error("Terjadi kesalahan saat mengirim tanggapan.")
+    } finally {
+      setLoading(false) // ✅ selalu reset false
     }
   }
+
 
   const handleOpenEdit = (pengaduan) => {
     setSelectedPengaduan(pengaduan)
@@ -130,6 +135,7 @@ export function PengaduanTable({
     }
 
     try {
+      setLoading(true)
       const res = await fetch(`/api/pengaduan/${selectedPengaduan.id_pengaduan}`, {
         method: "PUT",
         body: formData,
@@ -138,10 +144,11 @@ export function PengaduanTable({
       toast.success("Pengaduan berhasil diperbarui!")
       handleCloseEditDialog()
       location.reload()
-      location.reload()
     } catch (error) {
       console.error("Error editing pengaduan:", error)
       toast.error("Terjadi kesalahan saat mengedit pengaduan.")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -452,7 +459,7 @@ export function PengaduanTable({
             <Button variant="outline" onClick={handleCloseReplyDialog}>
               Batal
             </Button>
-            <Button onClick={handleSubmitReply}>Kirim Tanggapan</Button>
+            <Button onClick={handleSubmitReply} disabled={loading}>{loading ? "Mengirim....." : "Kirim Tanggapan"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog >
@@ -506,7 +513,7 @@ export function PengaduanTable({
                 <Button type="button" variant="outline" onClick={handleCloseEditDialog}>
                   Batal
                 </Button>
-                <Button type="submit">Simpan Perubahan</Button>
+                <Button type="submit" disabled={loading}>{loading ? "Menyimpan...." : "Simpan Perubahan"}</Button>
               </DialogFooter>
             </form>
           )}

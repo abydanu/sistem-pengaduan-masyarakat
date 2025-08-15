@@ -14,6 +14,7 @@ export function CreatePengaduan({ isOpen, onClose, onSubmit }) {
 
   const [isiLaporan, setIsiLaporan] = useState("")
   const [foto, setFoto] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -51,7 +52,7 @@ export function CreatePengaduan({ isOpen, onClose, onSubmit }) {
             />
           </div>
           <div className="flex justify-end">
-            <Button type="submit">Kirim Laporan</Button>
+            <Button type="submit" onClick={() => setLoading(!loading)}>{loading ? "Mengirim...." : "Kirim Laporan"}</Button>
           </div>
         </form>
       </DialogContent>

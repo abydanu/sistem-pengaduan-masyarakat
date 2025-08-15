@@ -9,33 +9,47 @@ import { format } from "date-fns"
 
 export function GenerateLaporanButton() {
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [range, setRange] = useState({ from: null, to: null })
 
-  const handleDownload = async () => {
-    if (!range.from || !range.to) {
-      toast.error("Pilih tanggal awal dan akhir terlebih dahulu!")
-      return
-    }
+const handleDownload = async () => {
+  if (!range.from || !range.to) {
+    toast.error("Pilih tanggal awal dan akhir terlebih dahulu!");
+    return;
+  }
 
-    const startStr = format(range.from, "yyyy-MM-dd")
-    const endStr = format(range.to, "yyyy-MM-dd")
+  const startStr = format(range.from, "yyyy-MM-dd");
+  const endStr = format(range.to, "yyyy-MM-dd");
 
-    const checkRes = await fetch(`/api/laporan/generate?start=${startStr}&end=${endStr}`, { method: "HEAD" })
+  setLoading(true); 
+
+  try {
+    const checkRes = await fetch(`/api/laporan/generate?start=${startStr}&end=${endStr}`, { method: "HEAD" });
 
     if (!checkRes.ok) {
-      const errRes = await fetch(`/api/laporan/generate?start=${startStr}&end=${endStr}`)
-      const errData = await errRes.json()
-      toast.error(errData.error || "Gagal membuat laporan PDF")
-      return
+      const errRes = await fetch(`/api/laporan/generate?start=${startStr}&end=${endStr}`);
+      if (!errRes.ok) {
+        const errData = await errRes.json();
+        toast.error(errData.error || "Gagal membuat laporan PDF");
+        return;
+      }
     }
 
-    const link = document.createElement("a")
-    link.href = `/api/laporan/generate?start=${startStr}&end=${endStr}`
-    link.download = `laporan_pengaduan_${startStr}_${endStr}.pdf`
-    link.click()
+    const link = document.createElement("a");
+    link.href = `/api/laporan/generate?start=${startStr}&end=${endStr}`;
+    link.download = `laporan_pengaduan_${startStr}_${endStr}.pdf`;
+    link.click();
 
-    setOpen(false)
+    setOpen(false);
+    toast.success("Laporan berhasil diunduh!");
+  } catch (error) {
+    toast.error("Terjadi kesalahan saat membuat laporan");
+    console.error(error);
+  } finally {
+    setLoading(false); 
   }
+};
+
 
   return (
     <>
@@ -57,14 +71,13 @@ export function GenerateLaporanButton() {
               numberOfMonths={1}
               className="rounded-md border"
             />
-
             <Button
               onClick={handleDownload}
               variant="outline"
-              disabled={!range.from || !range.to}
-              className="w-full"
+              disabled={!range?.from || !range?.to || loading}
+              className="w-full hover:cursor-pointer"
             >
-              Export PDF
+              {loading ? "Membuat Laporan...." : "Buat Laporan"}
             </Button>
           </div>
         </DialogContent>
